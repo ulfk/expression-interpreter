@@ -1,18 +1,3 @@
-﻿/* 
- * Autor: Ulf Kühnle
- * Datum: 24.03.2018
- * 
- * Anmerkungen zur Implementierung:
- * - Für Produktions-Umgebungen müssten ggf. die Fehlermeldungen noch lokalisierbar umgebaut werden.
- * - "this." kann für Member innerhalb derselben Klasse weggelassen werden. Coding Rules in der aktuellen Firma sehen 
- *   allerdings immer die Verwendung von "this." für alle Verwendungen von Klassen-Membern vor. Ich persönlich
- *   bevorzuge ebenfalls die Verwendung von "this.".
- * - Es wurde nicht nach NuGet-Paketen oder anderen Bibliotheken gesucht, die evtl. bereits einen Formel-Parser
- *   implementieren, da angenommen wurde, dass es bei der Arbeitsprobe darum ging, diese Implementierung selbst
- *   durchzuführen. Für Produktions-Projekte wäre eine Verwendung von bereits vorhandenen und nutzbaren Bibliotheken
- *   abzuwägen.
- */
-
 using System.Collections.Generic;
 
 namespace worksample
