@@ -120,10 +120,14 @@ namespace UnitTestsExpressionInterpreter
                     var result = expressionInterpreter.CalculateWith(variableValues);
                     Assert.Fail($"The calculation should have created an error for expression '{testCase.Key}'");
                 }
-                catch (Exception)
+                catch (DataException)
                 {
                     // The expected positive result it to get an exception for invalid expressions.
                     // No further action needed here.
+                }
+                catch(Exception ex)
+                {
+                    Assert.Fail($"Possible program error: {ex.Message}");
                 }
             }
         }
