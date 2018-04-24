@@ -8,7 +8,7 @@ The mathematical expression may consist of these parts:
 - brackets as needed for grouping parts of the expression
 - spaces are allowed anywhere in the expression.
 
-The expression must be given as string to the constuctor of ExpressionInterpreter. To calculate the value of the expression the method CalculateWith can be called with a list of the variable values to be used in the calculation.
+The expression must be given as string to the constuctor of `ExpressionInterpreter`. To calculate the value of the expression the method `CalculateWith` can be called with a list of the variable values to be used in the calculation.
 
 Some expression examples:
 - 3 + 4
