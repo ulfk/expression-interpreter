@@ -1,7 +1,7 @@
 ﻿
-namespace worksample
+namespace ExpressionInterpreterExample
 {
-    enum ElementType
+    public enum ElementType
     {
         Undefined,
         Scalar,

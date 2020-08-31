@@ -1,35 +1,35 @@
 using System.Collections.Generic;
 
-namespace worksample
+namespace ExpressionInterpreterExample
 {
-    public class ExpressionInterpreter
+    public class ExpressionInterpreter : IExpressionInterpreter
     {
         #region PrivateMemberVariablesAndConstants
 
         /// <summary>
         /// Used during processing and holds all expression elements as single entries.
         /// </summary>
-        private string[] expressionElementList;
+        private string[] _expressionElementList;
 
         /// <summary>
         /// Used during processing and is the current index to the array expressionElementList.
         /// </summary>
-        private int expressionElementIndex;
+        private int _expressionElementIndex;
 
         /// <summary>
         /// Used to keep track of number of open bracket and to check for syntax-errors.
         /// </summary>
-        private int bracketDepth;
+        private int _bracketDepth;
 
         /// <summary>
         /// Used during processing to store type of last element to be able to check for syntax-errors.
         /// </summary>
-        private ElementType lastElementType;
+        private ElementType _lastElementType;
 
         /// <summary>
-        /// Expression tree representring the fully processed expresion.
+        /// Expression tree representing the fully processed expression.
         /// </summary>
-        private Node expressionTree;
+        private Node _expressionTree;
 
         #endregion
 
@@ -48,9 +48,26 @@ namespace worksample
         /// </param>
         public ExpressionInterpreter(string expressionAsText)
         {
-            AssertHelper.FormatAssert(expressionAsText != null, "The parameter 'expressionAsText' cannot be NULL.");
-            SyntaxHelper.CheckForValidCharaters(expressionAsText);
-            this.CreateExpressionTree(expressionAsText);
+            RegisterExpression(expressionAsText);
+        }
+
+        /// <summary>
+        /// Initializes the interpreter for basic mathematical expressions. Valid expressions may contain
+        ///  - the mathematical operators for addition (+), subtraction (-) and multiplication (*)
+        ///  - constant integer numbers
+        ///  - variable names consisting of one lowercase character in the range from "a" to "z".
+        ///  - brackets as needed for grouping parts of the expression
+        ///  - spaces are allowed anywhere in the expression.
+        /// </summary>
+        /// <param name="expressionAsText">
+        /// The textual mathematical expression, for example "3 + 5 *(a+b)"
+        /// </param>
+        public void RegisterExpression(string expressionAsText)
+        {
+            ResetInstance();
+            (expressionAsText != null).EnsureValidData("The parameter 'expressionAsText' cannot be NULL.");
+            SyntaxHelper.CheckForValidCharacters(expressionAsText);
+            CreateExpressionTree(expressionAsText);
         }
 
         /// <summary>
@@ -71,7 +88,7 @@ namespace worksample
                 valuesOfVariables = new Dictionary<Variable, int>();
             }
 
-            return this.expressionTree.Evaluate(valuesOfVariables);
+            return _expressionTree.Evaluate(valuesOfVariables);
         }
 
         #endregion
@@ -79,18 +96,30 @@ namespace worksample
         #region PrivateParsingMethods
 
         /// <summary>
-        /// Parses the expression and stores a corresponding expression-tree to be used for calcualtion.
+        /// Reset al instance variables.
+        /// </summary>
+        private void ResetInstance()
+        {
+            _expressionElementList = null;
+            _expressionElementIndex = 0;
+            _bracketDepth = 0;
+            _lastElementType = ElementType.Undefined;
+            _expressionTree = null;
+        }
+
+        /// <summary>
+        /// Parses the expression and stores a corresponding expression-tree to be used for calculation.
         /// </summary>
         /// <param name="expressionAsText">
         /// Textual mathematical expression.
         /// </param>
         private void CreateExpressionTree(string expressionAsText)
         {
-            this.lastElementType = ElementType.Undefined;
-            this.expressionElementList = SyntaxHelper.SplitExpressionToElements(expressionAsText);
+            _lastElementType = ElementType.Undefined;
+            _expressionElementList = SyntaxHelper.SplitExpressionToElements(expressionAsText);
 
-            this.expressionTree = ProcessExpressionElements();
-            AssertHelper.SyntaxAssert(this.bracketDepth == 0, "Missing closing bracket.");
+            _expressionTree = ProcessExpressionElements();
+            (_bracketDepth == 0).EnsureValidSyntax("Missing closing bracket.");
         }
 
         /// <summary>
@@ -114,8 +143,7 @@ namespace worksample
             if(pendingNode != null)
             {
                 // if there is already a pending node then there has to be an operator to combine the two nodes
-                AssertHelper.SyntaxAssert(operatorType != OperatorType.Undefined, 
-                             $"Missing operator at position {this.expressionElementIndex}.");
+                (operatorType != OperatorType.Undefined).EnsureValidSyntax($"Missing operator at position {_expressionElementIndex}.");
                 return new NodeOperator(pendingNode, operatorType, newNode);
             }
 
@@ -132,7 +160,7 @@ namespace worksample
         /// <returns>
         /// Returns the new node.
         /// </returns>
-        private Node CreateScalarNode(string element)
+        private static Node CreateScalarNode(string element)
         {
             if (SyntaxHelper.IsVariable(element))
             {
@@ -160,28 +188,27 @@ namespace worksample
             // for syntax-check: (sub-)expression cannot start with operator
             var firstElementInExpression = true;
 
-            while(this.IsElementForProcessingAvailable())
+            while(IsElementForProcessingAvailable())
             {
-                var currentElement = this.GetCurrentElement();
+                var currentElement = GetCurrentElement();
 
                 if (SyntaxHelper.IsScalar(currentElement))
                 {
-                    SyntaxAssert(ElementType.Scalar);
-                    this.ConsumeElement(ElementType.Scalar);
-                    var newNode = this.CreateScalarNode(currentElement);
-                    pendingNode = this.MergeNodes(pendingNode, operatorType, newNode);
+                    EnsureElementIsValid(ElementType.Scalar);
+                    ConsumeElement(ElementType.Scalar);
+                    var newNode = CreateScalarNode(currentElement);
+                    pendingNode = MergeNodes(pendingNode, operatorType, newNode);
                     operatorType = OperatorType.Undefined;
                 }
                 else if(SyntaxHelper.IsOperator(currentElement))
                 {
-                    AssertHelper.SyntaxAssert(!firstElementInExpression,
-                                 "First element of expression cannot be an operator.");
-                    SyntaxAssert(ElementType.Operator);
-                    this.ConsumeElement(ElementType.Operator);
+                    (!firstElementInExpression).EnsureValidSyntax("First element of expression cannot be an operator.");
+                    EnsureElementIsValid(ElementType.Operator);
+                    ConsumeElement(ElementType.Operator);
                     operatorType = SyntaxHelper.GetOperatorType(currentElement);
 
-                    // multiplication before addition/substraction: 
-                    // for addition/substraction start with new node in next loop
+                    // multiplication before addition/subtraction: 
+                    // for addition/subtraction start with new node in next loop
                     if (operatorType != OperatorType.Mult)
                     {
                         nodeStack.Add(new InputStackEntry { Node = pendingNode,
@@ -192,19 +219,19 @@ namespace worksample
                 }
                 else if (SyntaxHelper.IsBracketOpening(currentElement))
                 {
-                    SyntaxAssert(ElementType.Scalar);
-                    this.EnterBracket();
-                    this.ConsumeElement(ElementType.Undefined);
+                    EnsureElementIsValid(ElementType.Scalar);
+                    EnterBracket();
+                    ConsumeElement(ElementType.Undefined);
                     // brackets are handled by recursion
-                    var newNode = this.ProcessExpressionElements();
-                    pendingNode = this.MergeNodes(pendingNode, operatorType, newNode);
+                    var newNode = ProcessExpressionElements();
+                    pendingNode = MergeNodes(pendingNode, operatorType, newNode);
                     operatorType = OperatorType.Undefined;
                 }
                 else if (SyntaxHelper.IsBracketClosing(currentElement))
                 {
-                    SyntaxAssert(ElementType.Operator);
-                    this.LeaveBracket();
-                    this.ConsumeElement(ElementType.Scalar);
+                    EnsureElementIsValid(ElementType.Operator);
+                    LeaveBracket();
+                    ConsumeElement(ElementType.Scalar);
                     // terminate loop to finish current recursion level
                     break;
                 }
@@ -213,12 +240,12 @@ namespace worksample
             }
 
             // at the end of the loop we must have a node but no pending operator
-            AssertHelper.SyntaxAssert(operatorType == OperatorType.Undefined, "Missing scalar at the end of the expression.");
-            AssertHelper.SyntaxAssert(pendingNode != null, "Missing element in expression.");
+            (operatorType == OperatorType.Undefined).EnsureValidSyntax("Missing scalar at the end of the expression.");
+            (pendingNode != null).EnsureValidSyntax("Missing element in expression.");
 
             // build the resulting node-tree out of the stack of nodes and operators
-            var resultNode = this.MergeNodeStackToTree(nodeStack, pendingNode);
-            AssertHelper.SyntaxAssert(resultNode != null, "Missing element in expression.");
+            var resultNode = MergeNodeStackToTree(nodeStack, pendingNode);
+            (resultNode != null).EnsureValidSyntax("Missing element in expression.");
 
             return resultNode;
         }
@@ -235,34 +262,20 @@ namespace worksample
         /// <returns>
         /// Returns the base node containing all others node from the stack.
         /// </returns>
-        private Node MergeNodeStackToTree(List<InputStackEntry> nodeStack, Node pendingNode)
+        private Node MergeNodeStackToTree(IEnumerable<InputStackEntry> nodeStack, Node pendingNode)
         {
             Node resultNode = null;
             var operatorType = OperatorType.Undefined;
             // merge the nodes together
             foreach (var stackEntry in nodeStack)
             {
-                if (resultNode == null)
-                {
-                    resultNode = stackEntry.Node;
-                }
-                else
-                {
-                    resultNode = this.MergeNodes(resultNode, operatorType, stackEntry.Node);
-                }
+                resultNode = resultNode == null ? stackEntry.Node : MergeNodes(resultNode, operatorType, stackEntry.Node);
 
                 operatorType = stackEntry.OperatorType;
             }
 
             // add the last pending node
-            if (resultNode == null)
-            {
-                resultNode = pendingNode;
-            }
-            else
-            {
-                resultNode = this.MergeNodes(resultNode, operatorType, pendingNode);
-            }
+            resultNode = resultNode == null ? pendingNode : MergeNodes(resultNode, operatorType, pendingNode);
 
             return resultNode;
         }
@@ -275,7 +288,7 @@ namespace worksample
         /// </returns>
         private bool IsElementForProcessingAvailable()
         {
-            return this.expressionElementIndex < this.expressionElementList.Length;
+            return _expressionElementIndex < _expressionElementList.Length;
         }
 
         /// <summary>
@@ -286,7 +299,7 @@ namespace worksample
         /// </returns>
         private string GetCurrentElement()
         {
-            return this.expressionElementList[this.expressionElementIndex];
+            return _expressionElementList[_expressionElementIndex];
         }
 
         /// <summary>
@@ -298,8 +311,8 @@ namespace worksample
         /// </param>
         private void ConsumeElement(ElementType elementType)
         {
-            this.expressionElementIndex++;
-            this.lastElementType = elementType;
+            _expressionElementIndex++;
+            _lastElementType = elementType;
         }
 
         /// <summary>
@@ -307,17 +320,17 @@ namespace worksample
         /// </summary>
         private void EnterBracket()
         {
-            this.bracketDepth++;
+            _bracketDepth++;
         }
 
         /// <summary>
         /// Track bracket leaving by decrementing the bracketDepth value.
-        /// Throws SyntaxException if there is currently no open braket i.e. bracketDepth is zero.
+        /// Throws SyntaxException if there is currently no open bracket i.e. bracketDepth is zero.
         /// </summary>
         private void LeaveBracket()
         {
-            AssertHelper.SyntaxAssert(this.bracketDepth > 0, $"unexpected closing bracket at position {this.expressionElementIndex}");
-            this.bracketDepth--;
+            (_bracketDepth > 0).EnsureValidSyntax($"unexpected closing bracket at position {_expressionElementIndex}");
+            _bracketDepth--;
         }
 
         /// <summary>
@@ -327,10 +340,10 @@ namespace worksample
         /// <param name="elementType">
         /// Type of the current element.
         /// </param>
-        private void SyntaxAssert(ElementType elementType)
+        private void EnsureElementIsValid(ElementType elementType)
         {
-            AssertHelper.SyntaxAssert(this.lastElementType == ElementType.Undefined || this.lastElementType != elementType,
-                                      $"wrong element type '{this.lastElementType}' at index {this.expressionElementIndex}");
+            (_lastElementType == ElementType.Undefined || _lastElementType != elementType)
+                .EnsureValidSyntax($"wrong element type '{_lastElementType}' at index {_expressionElementIndex}");
         }
 
         #endregion

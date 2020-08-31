@@ -2,35 +2,34 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace worksample
+namespace ExpressionInterpreterExample
 {
-    class SyntaxHelper
+    public class SyntaxHelper
     {
         // Regular expression for parsing the mathematical expression.
         private const string ParsingExpressionPattern = @"([0-9]+|[a-z\+\-\*\(\)])";
 
-        // Regular expression for whitelisting of the given input-string.
+        // Regular expression for white-listing of the given input-string.
         private const string WhiteListExpressionPattern = @"^([0-9a-z\+\-\*\(\) ]+)$";
 
-        // Description of valid charaters (will be added to error-message if invalid
+        // Description of valid characters (will be added to error-message if invalid
         // charters had been found).
-        private static readonly string AllowedExpressionCharaters = "Allowed charaters are: "
+        private static readonly string AllowedExpressionCharacters = "Allowed characters are: "
                                     + Environment.NewLine + " a-z"
                                     + Environment.NewLine + " 0-9"
                                     + Environment.NewLine + " + - *"
                                     + Environment.NewLine + " ( )";
 
         /// <summary>
-        /// Checks if the expression contains only valid charaters. If not, an expception will be thrown.
+        /// Checks if the expression contains only valid characters. If not, an exception will be thrown.
         /// </summary>
         /// <param name="expressionAsText">
         /// Textual mathematical expression.
         /// </param>
-        public static void CheckForValidCharaters(string expressionAsText)
+        public static void CheckForValidCharacters(string expressionAsText)
         {
-            var onlyValidCharatersFound = Regex.IsMatch(expressionAsText, WhiteListExpressionPattern);
-            AssertHelper.FormatAssert(onlyValidCharatersFound,
-                       $"Invalid characters in expression '{expressionAsText}'. {AllowedExpressionCharaters}");
+            var onlyValidCharactersFound = Regex.IsMatch(expressionAsText, WhiteListExpressionPattern);
+            onlyValidCharactersFound.EnsureValidData($"Invalid characters in expression '{expressionAsText}'. {AllowedExpressionCharacters}");
         }
 
         /// <summary>
@@ -68,9 +67,8 @@ namespace worksample
 
         public static bool IsConstant(string numberString)
         {
-            var convertedNumber = 0;
             return numberString.Length > 0
-                && int.TryParse(numberString, out convertedNumber);
+                   && int.TryParse(numberString, out _);
         }
 
         public static bool IsBracketOpening(string bracketCharacter)
@@ -109,8 +107,7 @@ namespace worksample
             return operatorCharacter.Length == 1
                 && operatorCharacter[0] == '*';
         }
-
-
+        
         /// <summary>
         /// Get operator type by operator character.
         /// </summary>
@@ -126,11 +123,11 @@ namespace worksample
             {
                 return OperatorType.Add;
             }
-            else if (IsOperatorSub(operatorString))
+            if (IsOperatorSub(operatorString))
             {
                 return OperatorType.Sub;
             }
-            else if (IsOperatorMult(operatorString))
+            if (IsOperatorMult(operatorString))
             {
                 return OperatorType.Mult;
             }

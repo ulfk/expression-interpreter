@@ -7,7 +7,7 @@
     <ProjectGuid>{C5D19D53-4A79-4DE5-B647-F488E437289D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>worksample</RootNamespace>
+    <RootNamespace>ExpressionInterpreterExample</RootNamespace>
     <AssemblyName>ExpressionInterpreter</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -40,10 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssertHelper.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="ElementType.cs" />
     <Compile Include="ExpressionInterpreter.cs" />
     <Compile Include="DataException.cs" />
+    <Compile Include="IExpressionInterpreter.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="NodeNumeric.cs" />
     <Compile Include="NodeOperator.cs" />

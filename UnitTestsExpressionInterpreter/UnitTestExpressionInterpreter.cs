@@ -1,5 +1,4 @@
-﻿using System;
-using worksample;
+﻿using ExpressionInterpreterExample;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
@@ -11,53 +10,48 @@ namespace UnitTestsExpressionInterpreter
         /// <summary>
         /// Test single numbers.
         /// </summary>
-        [TestMethod]
-        public void TestSingleNumber()
+        [DataTestMethod]
+        [DataRow("5", 5)]
+        [DataRow("42", 42)]
+        [DataRow("987654", 987654)]
+        public void TestSingleNumber(string expression, int value)
         {
-            var testCases = new Dictionary<string, int>();
-            testCases["5"] = 5;
-            testCases["42"] = 42;
-            testCases["987654"] = 987654;
-
-            this.ExecuteTestCases(testCases);
+            ExecuteTestCase(expression, value);
         }
 
         /// <summary>
         /// Test simple expressions without variables or brackets. 
         /// Test also the rule "multiplication before addition/subtraction".
         /// </summary>
-        [TestMethod]
-        public void TestSimpleExpressions()
+        [DataTestMethod]
+        [DataRow("4+ 5", 9)]
+        [DataRow("2 - 15", -13)]
+        [DataRow("42 *3", 126)]
+        [DataRow("14 - 4 * 4 + 2", 0)]
+        [DataRow("1*2*3*4+1", 25)]
+        public void TestSimpleExpressions(string expression, int value)
         {
-            var testCases = new Dictionary<string,int>();
-            testCases["4+ 5"] = 9;
-            testCases["2 - 15"] = -13;
-            testCases["42 *3"] = 126;
-            testCases["14 - 4 * 4 + 2"] = 0;
-            testCases["1*2*3*4+1"] = 25;
-
-            this.ExecuteTestCases(testCases);
+            ExecuteTestCase(expression, value);
         }
 
         /// <summary>
         /// Text expressions with variables.
         /// </summary>
-        [TestMethod]
-        public void TestVariableExpressions()
+        [DataTestMethod]
+        [DataRow("a+ 5", 7)]
+        [DataRow("2 - b", -3)]
+        [DataRow("42 *c", 336)]
+        [DataRow("c", 8)]
+        [DataRow("a + a * a", 6)]
+        [DataRow("c *c*c", 512)]
+        public void TestVariableExpressions(string expression, int value)
         {
-            var testCases = new Dictionary<string, int>();
-            testCases["a+ 5"] = 7;
-            testCases["2 - b"] = -3;
-            testCases["42 *c"] = 336;
-            testCases["c"] = 8;
-            testCases["a + a * a"] = 6;
-            testCases["c *c*c"] = 512;
-            var variableValues = new Dictionary<Variable, int>();
-            variableValues.Add(new Variable("a"), 2);
-            variableValues.Add(new Variable("b"), 5);
-            variableValues.Add(new Variable("c"), 8);
+            var variableValues = new Dictionary<Variable, int>
+            {
+                {new Variable("a"), 2}, {new Variable("b"), 5}, {new Variable("c"), 8}
+            };
 
-            this.ExecuteTestCases(testCases, variableValues);
+            ExecuteTestCase(expression, value, variableValues);
         }
 
         /// <summary>
@@ -66,166 +60,106 @@ namespace UnitTestsExpressionInterpreter
         [TestMethod]
         public void TestPredefinedExpression()
         {
-            var testCases = new Dictionary<string, int>();
-            testCases["3*x + 20- y *(z + 17)"] = -17;
-            var variableValues = new Dictionary<Variable, int>();
-            variableValues.Add(new Variable("x"), 1);
-            variableValues.Add(new Variable("y"), 2);
-            variableValues.Add(new Variable("z"), 3);
+            var variableValues = new Dictionary<Variable, int>
+            {
+                {new Variable("x"), 1}, {new Variable("y"), 2}, {new Variable("z"), 3}
+            };
 
-            this.ExecuteTestCases(testCases, variableValues);
+            ExecuteTestCase("3*x + 20- y *(z + 17)", -17, variableValues);
         }
 
         /// <summary>
         /// Test expressions with brackets and variables.
         /// </summary>
-        [TestMethod]
-        public void TestBracketExpressions()
+        [DataTestMethod]
+        [DataRow("a * ( 3 + 7)", 20)]
+        [DataRow("3 * ( a + b * (17 - c)) + 2", 143)]
+        [DataRow("(33 + b) * (4711-23 * (42 - 0)) + a", 142312)]
+        [DataRow("( 3 + 7)", 10)]
+        public void TestBracketExpressions(string expression, int value)
         {
-            var testCases = new Dictionary<string, int>();
-            testCases["a * ( 3 + 7)"] = 20;
-            testCases["3 * ( a + b * (17 - c)) + 2"] = 143;
-            testCases["(33 + b) * (4711-23 * (42 - 0)) + a"] = 142312;
-            testCases["( 3 + 7)"] = 10;
-            var variableValues = new Dictionary<Variable, int>();
-            variableValues.Add(new Variable("a"), 2);
-            variableValues.Add(new Variable("b"), 5);
-            variableValues.Add(new Variable("c"), 8);
+            var variableValues = new Dictionary<Variable, int>
+            {
+                {new Variable("a"), 2}, {new Variable("b"), 5}, {new Variable("c"), 8}
+            };
 
-            this.ExecuteTestCases(testCases, variableValues);
+            ExecuteTestCase(expression, value, variableValues);
         }
 
         /// <summary>
         /// Test expressions with variables but variable values are missing. 
         /// The constructor should run without error because the expressions are valid.
-        /// During calcualtion we expect an error.
+        /// During calculation we expect an error.
         /// </summary>
-        [TestMethod]
-        public void TestMissingVariableValues()
+        [DataTestMethod]
+        [DataRow("a * b")]
+        [DataRow("a + b - c")]
+        [DataRow("123 + a - 22 * 13 - c + b")]
+        [DataRow("100 + 5 - x - 1")]
+        [ExpectedException(typeof(DataException))]
+        public void TestMissingVariableValues(string expression)
         {
-            var testCases = new Dictionary<string, int>();
-            testCases["a * b"] = 0;
-            testCases["a + b - c"] = 0;
-            testCases["123 + a - 22 * 13 - c + b"] = 0;
-            testCases["100 + 5 - x - 1"] = 0;
-            var variableValues = new Dictionary<Variable, int>();
-            variableValues.Add(new Variable("a"), 2);
-            variableValues.Add(new Variable("c"), 8);
+            var variableValues = new Dictionary<Variable, int> {{new Variable("a"), 2}, {new Variable("c"), 8}};
 
-            foreach (var testCase in testCases)
-            {
-                var expressionInterpreter = new ExpressionInterpreter(testCase.Key);
-                try
-                {
-                    var result = expressionInterpreter.CalculateWith(variableValues);
-                    Assert.Fail($"The calculation should have created an error for expression '{testCase.Key}'");
-                }
-                catch (DataException)
-                {
-                    // The expected positive result it to get an exception for invalid expressions.
-                    // No further action needed here.
-                }
-                catch(Exception ex)
-                {
-                    Assert.Fail($"Possible program error: {ex.Message}");
-                }
-            }
+            ExecuteTestCase(expression, 0, variableValues);
         }
 
         /// <summary>
-        /// Test several invalid expressions: syntax errors and invalid charcters.
+        /// Test several invalid expressions: syntax errors and invalid characters.
         /// </summary>
-        [TestMethod]
-        public void TestInvalidExpressions()
+        [DataTestMethod]
+        // missing closing parenthesis
+        [DataRow("a * ( 3 + 7) (")]
+        // unexpected closing parenthesis at the end
+        [DataRow("a * ( 3 + 7) )")]
+        // unexpected closing parenthesis in the middle
+        [DataRow("a * ) ( 3 + 7) ")]
+        // unexpected operator i.e. missing scalar
+        [DataRow("* 3 + 5")]
+        [DataRow("3 + * 5")]
+        [DataRow("3 + 5 * ")]
+        [DataRow("3 + 5 * (+ 7 - 3)")]
+        [ExpectedException(typeof(SyntaxException))]
+        public void TestInvalidExpressionsCausingSyntaxException(string expression)
         {
-            // key of dictionary is the expression to be tested, value is expected result
-            var testCases = new Dictionary<string, int>();
-            // missing closing parenthesis
-            testCases["a * ( 3 + 7) ("] = 0;
-            // unexpected closing parenthesis at the end
-            testCases["a * ( 3 + 7) )"] = 0;
-            // unexpected closing parenthesis in the middle
-            testCases["a * ) ( 3 + 7) "] = 0;
-            // unexpected operator i.e. missing scalar
-            testCases["* 3 + 5"] = 0;
-            testCases["3 + * 5"] = 0;
-            testCases["3 + 5 * "] = 0;
-            testCases["3 + 5 * (+ 7 - 3)"] = 0;
-            // invalid charaters
-            testCases["3 + 5 % 2"] = 0;
-            testCases["3 + 5 * A"] = 0;
-            testCases["3 + 5 * ^"] = 0;
-            testCases["3232XYZ"] = 0;
-            testCases["äöü"] = 0;
-            testCases["=/&%$§!\""] = 0;
-            // empty expression
-            testCases[""] = 0;
-
-            var variableValues = new Dictionary<Variable, int>();
-            variableValues.Add(new Variable("a"), 2);
-            variableValues.Add(new Variable("b"), 5);
-            variableValues.Add(new Variable("c"), 8);
-
-            foreach (var testCase in testCases)
+            var variableValues = new Dictionary<Variable, int>
             {
-                try
-                {
-                    var expressionInterpreter = new ExpressionInterpreter(testCase.Key);
-                    Assert.Fail($"The expression should have been rejected as invalid: '{testCase.Key}'");
-                }
-                catch (SyntaxException)
-                {
-                    // The expected positive result it to get an exception for invalid expressions.
-                    // No further action needed here.
-                }
-                catch(DataException)
-                {
-                    // This is also ok.
-                }
-                catch(Exception ex)
-                {
-                    Assert.Fail($"Possible program error: {ex.Message}");
-                }
-            }
+                {new Variable("a"), 2}, {new Variable("b"), 5}, {new Variable("c"), 8}
+            };
+
+            ExecuteTestCase(expression, 0, variableValues);
         }
 
         /// <summary>
-        /// Test for correct handling if given expression-string is NULL.
+        /// Test several invalid expressions: syntax errors and invalid characters.
         /// </summary>
-        [TestMethod]
-        public void TestNullExpression()
+        [DataTestMethod]
+        // invalid characters
+        [DataRow("3 + 5 % 2")]
+        [DataRow("3 + 5 * A")]
+        [DataRow("3 + 5 * ^")]
+        [DataRow("3232XYZ")]
+        [DataRow("äöü")]
+        [DataRow("=/&%$§!\"")]
+        // empty expression
+        [DataRow("")]
+        [DataRow(null)]
+        [ExpectedException(typeof(DataException))]
+        public void TestInvalidExpressionsCausingDataException(string expression)
         {
-            try
+            var variableValues = new Dictionary<Variable, int>
             {
-                var expressionInterpreter = new ExpressionInterpreter(null);
-            }
-            catch(DataException)
-            {
-                // The expected positive result it to get an exception for invalid expressions.
-                // No further action needed here.
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail($"Possible program error: {ex.Message}");
-            }
+                {new Variable("a"), 2}, {new Variable("b"), 5}, {new Variable("c"), 8}
+            };
+
+            ExecuteTestCase(expression, 0, variableValues);
         }
 
-        /// <summary>
-        /// Helper method that executes a list of testcases given in a dictionary: the key is the
-        /// expression and the value is the expected result-value of the expression.
-        /// </summary>
-        /// <param name="testCases">Dictionary with testcases.</param>
-        /// <param name="variableValues">Dictionary with variable-values.</param>
-        private void ExecuteTestCases(Dictionary<string, int> testCases, 
-                                      Dictionary<Variable, int> variableValues = null)
+        private void ExecuteTestCase(string expression, int value, Dictionary<Variable, int> variableValues = null)
         {
-            foreach (var testCase in testCases)
-            {
-                var expressionInterpreter = new ExpressionInterpreter(testCase.Key);
-                var result = expressionInterpreter.CalculateWith(variableValues);
-                Assert.AreEqual(testCase.Value, result, 
-                                $"Expected result for expression '{testCase.Key}' was {testCase.Value} but got {result}");
-            }
+            var expressionInterpreter = new ExpressionInterpreter(expression);
+            var result = expressionInterpreter.CalculateWith(variableValues);
+            Assert.AreEqual(value, result, $"Expected result for expression '{expression}' was {value} but got {result}");
         }
     }
 }

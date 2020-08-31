@@ -1,26 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace worksample
+﻿
+namespace ExpressionInterpreterExample
 {
     /// <summary>
     /// Represents a variable by its name.
     /// </summary>
     public class Variable
     {
-        public Variable(char name)
-        {
-            this.Name = name;
-        }
-
         public Variable(string name)
         {
             if (name.Length == 1)
             {
-                this.Name = name[0];
+                Name = name[0];
             }
             else
             {
@@ -28,11 +18,11 @@ namespace worksample
             }
         }
 
-        public char Name { get; private set; }
+        public char Name { get; }
 
         public bool HasSameNameAs(Variable variableToCompareWith)
         {
-            return this.Name == variableToCompareWith.Name;
+            return Name == variableToCompareWith.Name;
         }
     }
 }

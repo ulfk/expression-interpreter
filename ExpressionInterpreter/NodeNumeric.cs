@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
 
-namespace worksample
+namespace ExpressionInterpreterExample
 {
     /// <summary>
     /// Represents a constant numeric node.
     /// </summary>
-    class NodeNumeric : Node
+    public class NodeNumeric : Node
     {
-        private readonly int value;
+        private readonly int _value;
 
         public NodeNumeric(int value)
         {
-            this.value = value;
+            _value = value;
         }
 
         public override int Evaluate(IDictionary<Variable, int> variableValues)
         {
-            return this.value;
+            return _value;
         }
     }
 }

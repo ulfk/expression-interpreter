@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace worksample
+namespace ExpressionInterpreterExample
 {
     public class SyntaxException : Exception
     {

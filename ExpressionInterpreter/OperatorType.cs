@@ -1,7 +1,7 @@
 ﻿
-namespace worksample
+namespace ExpressionInterpreterExample
 {
-    enum OperatorType
+    public enum OperatorType
     {
         Undefined,
         Sub,
