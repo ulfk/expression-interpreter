@@ -1,9 +1,7 @@
 ﻿using System;
-using System.CodeDom;
 using ExpressionInterpreterExample;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace UnitTestsExpressionInterpreter
 {
