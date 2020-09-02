@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ExpressionInterpreterExample
 {
@@ -13,8 +14,8 @@ namespace ExpressionInterpreterExample
 
         public NodeOperator(Node leftNode, OperatorType operatorType, Node rightNode)
         {
-            _leftNode = leftNode;
-            _rightNode = rightNode;
+            _leftNode = leftNode ?? throw new ArgumentNullException(nameof(leftNode));
+            _rightNode = rightNode ?? throw new ArgumentNullException(nameof(rightNode));
             _operatorType = operatorType;
         }
 

@@ -1,6 +1,9 @@
-﻿using ExpressionInterpreterExample;
+﻿using System;
+using System.CodeDom;
+using ExpressionInterpreterExample;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace UnitTestsExpressionInterpreter
 {
@@ -154,6 +157,47 @@ namespace UnitTestsExpressionInterpreter
 
             ExecuteTestCase(expression, 0, variableValues);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataException))]
+        public void VariableConstructorWithInvalidNameThrows()
+        {
+            var _ = new Variable("ab");
+        }
+
+        [DataTestMethod]
+        [DataRow("/")]
+        [DataRow("x")]
+        [DataRow("")]
+        [DataRow("**")]
+        [ExpectedException(typeof(DataException))]
+        public void SyntaxHelperGetOperatorTypeWithInvalidOperatorThrows(string value)
+        {
+            SyntaxHelper.GetOperatorType(value);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataException))]
+        public void NodeOperatorEvaluateWithInvalidOperatorTypeThrows()
+        {
+            var node = new NodeOperator(new NodeNumeric(1), (OperatorType)99, new NodeNumeric(1));
+            node.Evaluate(null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void NodeOperatorConstructorWithLeftNodeNullThrows()
+        {
+            var _ = new NodeOperator(null, (OperatorType)99, new NodeNumeric(1));
+        }
+        
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void NodeOperatorConstructorWithRightNodeNullThrows()
+        {
+            var _ = new NodeOperator(new NodeNumeric(1), (OperatorType)99, null);
+        }
+
 
         private void ExecuteTestCase(string expression, int value, Dictionary<Variable, int> variableValues = null)
         {

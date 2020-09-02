@@ -140,15 +140,12 @@ namespace ExpressionInterpreterExample
         /// </returns>
         private Node MergeNodes(Node pendingNode, OperatorType operatorType, Node newNode)
         {
-            if(pendingNode != null)
-            {
-                // if there is already a pending node then there has to be an operator to combine the two nodes
-                (operatorType != OperatorType.Undefined).EnsureValidSyntax($"Missing operator at position {_expressionElementIndex}.");
-                return new NodeOperator(pendingNode, operatorType, newNode);
-            }
-
             // if there is no pending node then return the new node
-            return newNode;
+            if (pendingNode == null) return newNode;
+
+            // if there is already a pending node then there has to be an operator to combine the two nodes
+            (operatorType != OperatorType.Undefined).EnsureValidSyntax($"Missing operator at position {_expressionElementIndex}.");
+            return new NodeOperator(pendingNode, operatorType, newNode);
         }
 
         /// <summary>
@@ -166,11 +163,9 @@ namespace ExpressionInterpreterExample
             {
                 return new NodeVariable(element);
             }
-            else
-            {
-                var numericValue = int.Parse(element);
-                return new NodeNumeric(numericValue);
-            }
+            
+            var numericValue = int.Parse(element);
+            return new NodeNumeric(numericValue);
         }
 
         /// <summary>

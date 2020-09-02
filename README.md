@@ -3,7 +3,7 @@ Example implmentation of an interpreter for mathematical expressions (developed 
 
 The mathematical expression may consist of these parts:
 - the mathematical operators for addition (+), subtraction (-) and multiplication (*)
-- constant integer numbers
+- constant positive integer numbers (the '-' is only interpreted as operator not as sign)
 - variable names consisting of one lowercase character in the range from "a" to "z".
 - brackets as needed for grouping parts of the expression
 - spaces are allowed anywhere in the expression.

@@ -17,10 +17,10 @@ namespace ExpressionInterpreterExample
 
         public override int Evaluate(IDictionary<Variable, int> variableValues)
         {
-            var entry = variableValues.FirstOrDefault(v => v.Key.HasSameNameAs(this._name));
+            var entry = variableValues.FirstOrDefault(v => v.Key.HasSameNameAs(_name));
             if (entry.Equals(default(KeyValuePair<Variable, int>)))
             {
-                throw new DataException($"No value found for variable '{this._name}'");
+                throw new DataException($"No value found for variable '{_name}'");
             }
 
             return entry.Value;
