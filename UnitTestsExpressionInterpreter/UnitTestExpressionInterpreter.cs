@@ -178,7 +178,7 @@ namespace UnitTestsExpressionInterpreter
         [ExpectedException(typeof(DataException))]
         public void NodeOperatorEvaluateWithInvalidOperatorTypeThrows()
         {
-            var node = new NodeOperator(new NodeNumeric(1), (OperatorType)99, new NodeNumeric(1));
+            var node = new NodeOperator(new NodeNumeric("1"), (OperatorType)99, new NodeNumeric("1"));
             node.Evaluate(null);
         }
 
@@ -186,18 +186,25 @@ namespace UnitTestsExpressionInterpreter
         [ExpectedException(typeof(ArgumentNullException))]
         public void NodeOperatorConstructorWithLeftNodeNullThrows()
         {
-            var _ = new NodeOperator(null, (OperatorType)99, new NodeNumeric(1));
+            var _ = new NodeOperator(null, OperatorType.Add, new NodeNumeric("1"));
         }
         
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void NodeOperatorConstructorWithRightNodeNullThrows()
         {
-            var _ = new NodeOperator(new NodeNumeric(1), (OperatorType)99, null);
+            var _ = new NodeOperator(new NodeNumeric("1"), OperatorType.Add, null);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void NodeVariableEvaluateWithVariableDictionaryIsNullThrows()
+        {
+            var node = new NodeVariable("a");
+            node.Evaluate(null);
+        }
 
-        private void ExecuteTestCase(string expression, int value, Dictionary<Variable, int> variableValues = null)
+        private static void ExecuteTestCase(string expression, int value, IDictionary<Variable, int> variableValues = null)
         {
             var expressionInterpreter = new ExpressionInterpreter(expression);
             var result = expressionInterpreter.CalculateWith(variableValues);

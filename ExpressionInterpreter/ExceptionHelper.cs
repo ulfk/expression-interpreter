@@ -1,7 +1,7 @@
 ﻿
 namespace ExpressionInterpreterExample
 {
-    public static class ExtensionMethods
+    public static class ExceptionHelper
     {
         /// <summary>
         /// Throws syntax-exception if condition is not true. Adds 'message' to to the exception-message.

@@ -20,7 +20,7 @@ namespace ExpressionInterpreterExample
 
         public char Name { get; }
 
-        public bool HasSameNameAs(Variable variableToCompareWith)
+        public bool IsSameAs(Variable variableToCompareWith)
         {
             return Name == variableToCompareWith.Name;
         }

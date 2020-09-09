@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ExpressionInterpreterExample
@@ -17,7 +18,9 @@ namespace ExpressionInterpreterExample
 
         public override int Evaluate(IDictionary<Variable, int> variableValues)
         {
-            var entry = variableValues.FirstOrDefault(v => v.Key.HasSameNameAs(_name));
+            if(variableValues == null) throw new ArgumentNullException(nameof(variableValues));
+
+            var entry = variableValues.FirstOrDefault(v => v.Key.IsSameAs(_name));
             if (entry.Equals(default(KeyValuePair<Variable, int>)))
             {
                 throw new DataException($"No value found for variable '{_name}'");

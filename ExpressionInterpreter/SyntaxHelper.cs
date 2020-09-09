@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace ExpressionInterpreterExample
 {
-    public class SyntaxHelper
+    public static class SyntaxHelper
     {
         // Regular expression for parsing the mathematical expression.
         private const string ParsingExpressionPattern = @"([0-9]+|[a-z\+\-\*\(\)])";
@@ -52,60 +52,46 @@ namespace ExpressionInterpreterExample
         }
 
 
-        public static bool IsScalar(string scalarString)
+        public static bool IsScalar(this string scalarString)
         {
-            return IsConstant(scalarString)
-                || IsVariable(scalarString);
+            return scalarString.IsConstant()
+                || scalarString.IsVariable();
         }
 
-        public static bool IsVariable(string variableCharacter)
+        public static bool IsVariable(this string variableCharacter)
         {
             return variableCharacter.Length == 1
                 && variableCharacter[0] >= 'a'
                 && variableCharacter[0] <= 'z';
         }
 
-        public static bool IsConstant(string numberString)
+        public static bool IsConstant(this string numberString)
         {
             return numberString.Length > 0
                    && int.TryParse(numberString, out _);
         }
 
-        public static bool IsBracketOpening(string bracketCharacter)
+        public static bool IsBracketOpening(this string bracketCharacter) => bracketCharacter.EqualsChar('(');
+
+        public static bool IsBracketClosing(this string bracketCharacter) => bracketCharacter.EqualsChar(')');
+
+        public static bool IsOperator(this string operatorCharacter)
         {
-            return bracketCharacter.Length == 1
-                && bracketCharacter[0] == '(';
+            return operatorCharacter.IsOperatorAdd()
+                || operatorCharacter.IsOperatorSub()
+                || operatorCharacter.IsOperatorMult();
         }
 
-        public static bool IsBracketClosing(string bracketCharacter)
-        {
-            return bracketCharacter.Length == 1
-                && bracketCharacter[0] == ')';
-        }
+        public static bool IsOperatorAdd(this string operatorCharacter) => operatorCharacter.EqualsChar('+');
 
-        public static bool IsOperator(string operatorCharacter)
-        {
-            return IsOperatorAdd(operatorCharacter)
-                || IsOperatorSub(operatorCharacter)
-                || IsOperatorMult(operatorCharacter);
-        }
+        public static bool IsOperatorSub(this string operatorCharacter) => operatorCharacter.EqualsChar('-');
 
-        public static bool IsOperatorAdd(string operatorCharacter)
-        {
-            return operatorCharacter.Length == 1
-                && operatorCharacter[0] == '+';
-        }
+        public static bool IsOperatorMult(this string operatorCharacter) => operatorCharacter.EqualsChar('*');
 
-        public static bool IsOperatorSub(string operatorCharacter)
+        private static bool EqualsChar(this string value, char expected)
         {
-            return operatorCharacter.Length == 1
-                && operatorCharacter[0] == '-';
-        }
-
-        public static bool IsOperatorMult(string operatorCharacter)
-        {
-            return operatorCharacter.Length == 1
-                && operatorCharacter[0] == '*';
+            return value.Length == 1
+                   && value[0] == expected;
         }
         
         /// <summary>

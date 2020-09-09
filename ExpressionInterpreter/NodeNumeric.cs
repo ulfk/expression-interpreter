@@ -9,9 +9,10 @@ namespace ExpressionInterpreterExample
     {
         private readonly int _value;
 
-        public NodeNumeric(int value)
+        public NodeNumeric(string value)
         {
-            _value = value;
+            var numericValue = int.Parse(value);
+            _value = numericValue;
         }
 
         public override int Evaluate(IDictionary<Variable, int> variableValues)

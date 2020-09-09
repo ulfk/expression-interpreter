@@ -40,7 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="ExceptionHelper.cs" />
     <Compile Include="ElementType.cs" />
     <Compile Include="ExpressionInterpreter.cs" />
     <Compile Include="DataException.cs" />

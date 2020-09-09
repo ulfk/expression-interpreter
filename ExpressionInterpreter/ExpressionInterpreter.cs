@@ -159,13 +159,7 @@ namespace ExpressionInterpreterExample
         /// </returns>
         private static Node CreateScalarNode(string element)
         {
-            if (SyntaxHelper.IsVariable(element))
-            {
-                return new NodeVariable(element);
-            }
-            
-            var numericValue = int.Parse(element);
-            return new NodeNumeric(numericValue);
+            return element.IsVariable() ? (Node) new NodeVariable(element) : new NodeNumeric(element);
         }
 
         /// <summary>
@@ -178,7 +172,7 @@ namespace ExpressionInterpreterExample
         private Node ProcessExpressionElements()
         {
             Node pendingNode = null;
-            OperatorType operatorType = OperatorType.Undefined;
+            var operatorType = OperatorType.Undefined;
             var nodeStack = new List<InputStackEntry>();
             // for syntax-check: (sub-)expression cannot start with operator
             var firstElementInExpression = true;
@@ -187,7 +181,7 @@ namespace ExpressionInterpreterExample
             {
                 var currentElement = GetCurrentElement();
 
-                if (SyntaxHelper.IsScalar(currentElement))
+                if (currentElement.IsScalar())
                 {
                     EnsureElementIsValid(ElementType.Scalar);
                     ConsumeElement(ElementType.Scalar);
@@ -195,7 +189,7 @@ namespace ExpressionInterpreterExample
                     pendingNode = MergeNodes(pendingNode, operatorType, newNode);
                     operatorType = OperatorType.Undefined;
                 }
-                else if(SyntaxHelper.IsOperator(currentElement))
+                else if(currentElement.IsOperator())
                 {
                     (!firstElementInExpression).EnsureValidSyntax("First element of expression cannot be an operator.");
                     EnsureElementIsValid(ElementType.Operator);
@@ -206,13 +200,12 @@ namespace ExpressionInterpreterExample
                     // for addition/subtraction start with new node in next loop
                     if (operatorType != OperatorType.Mult)
                     {
-                        nodeStack.Add(new InputStackEntry { Node = pendingNode,
-                                                            OperatorType = operatorType });
+                        nodeStack.Add(new InputStackEntry { Node = pendingNode, OperatorType = operatorType });
                         pendingNode = null;
                         operatorType = OperatorType.Undefined;
                     }
                 }
-                else if (SyntaxHelper.IsBracketOpening(currentElement))
+                else if (currentElement.IsBracketOpening())
                 {
                     EnsureElementIsValid(ElementType.Scalar);
                     EnterBracket();
@@ -222,7 +215,7 @@ namespace ExpressionInterpreterExample
                     pendingNode = MergeNodes(pendingNode, operatorType, newNode);
                     operatorType = OperatorType.Undefined;
                 }
-                else if (SyntaxHelper.IsBracketClosing(currentElement))
+                else if (currentElement.IsBracketClosing())
                 {
                     EnsureElementIsValid(ElementType.Operator);
                     LeaveBracket();
@@ -265,7 +258,6 @@ namespace ExpressionInterpreterExample
             foreach (var stackEntry in nodeStack)
             {
                 resultNode = resultNode == null ? stackEntry.Node : MergeNodes(resultNode, operatorType, stackEntry.Node);
-
                 operatorType = stackEntry.OperatorType;
             }
 
