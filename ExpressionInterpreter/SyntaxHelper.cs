@@ -26,7 +26,7 @@ namespace ExpressionInterpreterExample
         /// <param name="expressionAsText">
         /// Textual mathematical expression.
         /// </param>
-        public static void CheckForValidCharacters(string expressionAsText)
+        public static void EnsureOnlyValidCharacters(this string expressionAsText)
         {
             var onlyValidCharactersFound = Regex.IsMatch(expressionAsText, WhiteListExpressionPattern);
             onlyValidCharactersFound.EnsureValidData($"Invalid characters in expression '{expressionAsText}'. {AllowedExpressionCharacters}");
@@ -38,20 +38,19 @@ namespace ExpressionInterpreterExample
         /// <param name="expressionAsText">
         /// Textual mathematical expression.
         /// </param>
-        public static string[] SplitExpressionToElements(string expressionAsText)
+        public static string[] SplitExpressionToElements(this string expressionAsText)
         {
             var regEx = new Regex(ParsingExpressionPattern, RegexOptions.None);
-            var expressionWithoutSpaces = RemoveSpaces(expressionAsText);
+            var expressionWithoutSpaces = expressionAsText.RemoveSpaces();
             var matchCollection = regEx.Matches(expressionWithoutSpaces);
             return matchCollection.Cast<Match>().Select(m => m.Value).ToArray();
         }
 
-        private static string RemoveSpaces(string inputString)
+        private static string RemoveSpaces(this string inputString)
         {
             return Regex.Replace(inputString, @"\s+", string.Empty);
         }
-
-
+        
         public static bool IsScalar(this string scalarString)
         {
             return scalarString.IsConstant()
@@ -103,7 +102,7 @@ namespace ExpressionInterpreterExample
         /// <returns>
         /// Return the type of the operator as OperatorType.
         /// </returns>
-        public static OperatorType GetOperatorType(string operatorString)
+        public static OperatorType ToOperatorType(this string operatorString)
         {
             if (IsOperatorAdd(operatorString))
             {

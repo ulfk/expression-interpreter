@@ -30,6 +30,7 @@ namespace UnitTestsExpressionInterpreter
         [DataRow("42 *3", 126)]
         [DataRow("14 - 4 * 4 + 2", 0)]
         [DataRow("1*2*3*4+1", 25)]
+        [DataRow("1 - 1 - 1", -1)]
         public void TestSimpleExpressions(string expression, int value)
         {
             ExecuteTestCase(expression, value);
@@ -45,6 +46,7 @@ namespace UnitTestsExpressionInterpreter
         [DataRow("c", 8)]
         [DataRow("a + a * a", 6)]
         [DataRow("c *c*c", 512)]
+        [DataRow("c *c*c +1", 513)]
         public void TestVariableExpressions(string expression, int value)
         {
             var variableValues = new Dictionary<Variable, int>
@@ -77,6 +79,7 @@ namespace UnitTestsExpressionInterpreter
         [DataRow("3 * ( a + b * (17 - c)) + 2", 143)]
         [DataRow("(33 + b) * (4711-23 * (42 - 0)) + a", 142312)]
         [DataRow("( 3 + 7)", 10)]
+        [DataRow("1 - ( 1 - 1)", 1)]
         public void TestBracketExpressions(string expression, int value)
         {
             var variableValues = new Dictionary<Variable, int>
@@ -171,7 +174,7 @@ namespace UnitTestsExpressionInterpreter
         [ExpectedException(typeof(DataException))]
         public void SyntaxHelperGetOperatorTypeWithInvalidOperatorThrows(string value)
         {
-            SyntaxHelper.GetOperatorType(value);
+            value.ToOperatorType();
         }
 
         [TestMethod]

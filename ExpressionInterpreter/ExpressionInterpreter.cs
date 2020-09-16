@@ -66,7 +66,7 @@ namespace ExpressionInterpreterExample
         {
             ResetInstance();
             (expressionAsText != null).EnsureValidData("The parameter 'expressionAsText' cannot be NULL.");
-            SyntaxHelper.CheckForValidCharacters(expressionAsText);
+            expressionAsText.EnsureOnlyValidCharacters();
             CreateExpressionTree(expressionAsText);
         }
 
@@ -116,7 +116,7 @@ namespace ExpressionInterpreterExample
         private void CreateExpressionTree(string expressionAsText)
         {
             _lastElementType = ElementType.Undefined;
-            _expressionElementList = SyntaxHelper.SplitExpressionToElements(expressionAsText);
+            _expressionElementList = expressionAsText.SplitExpressionToElements();
 
             _expressionTree = ProcessExpressionElements();
             (_bracketDepth == 0).EnsureValidSyntax("Missing closing bracket.");
@@ -157,14 +157,11 @@ namespace ExpressionInterpreterExample
         /// <returns>
         /// Returns the new node.
         /// </returns>
-        private static Node CreateScalarNode(string element)
-        {
-            return element.IsVariable() ? (Node) new NodeVariable(element) : new NodeNumeric(element);
-        }
+        private static Node CreateScalarNode(string element) => element.IsVariable() ? (Node) new NodeVariable(element) : new NodeNumeric(element);
 
         /// <summary>
         /// Process the parts of the expression and build up a node-tree to be used for calculation.
-        /// The function uses recursion the process the bracket in the expression.
+        /// The function uses recursion to process the brackets in the expression.
         /// </summary>
         /// <returns>
         /// Returns a node representing the current (sub-)expression.
@@ -177,7 +174,7 @@ namespace ExpressionInterpreterExample
             // for syntax-check: (sub-)expression cannot start with operator
             var firstElementInExpression = true;
 
-            while(IsElementForProcessingAvailable())
+            while(IsElementForProcessingAvailable)
             {
                 var currentElement = GetCurrentElement();
 
@@ -194,7 +191,7 @@ namespace ExpressionInterpreterExample
                     (!firstElementInExpression).EnsureValidSyntax("First element of expression cannot be an operator.");
                     EnsureElementIsValid(ElementType.Operator);
                     ConsumeElement(ElementType.Operator);
-                    operatorType = SyntaxHelper.GetOperatorType(currentElement);
+                    operatorType = currentElement.ToOperatorType();
 
                     // multiplication before addition/subtraction: 
                     // for addition/subtraction start with new node in next loop
@@ -273,10 +270,7 @@ namespace ExpressionInterpreterExample
         /// <returns>
         /// Returns true if there is another expression element, otherwise false.
         /// </returns>
-        private bool IsElementForProcessingAvailable()
-        {
-            return _expressionElementIndex < _expressionElementList.Length;
-        }
+        private bool IsElementForProcessingAvailable => _expressionElementIndex < _expressionElementList.Length;
 
         /// <summary>
         /// Returns the current element of the expression during processing.
@@ -284,10 +278,7 @@ namespace ExpressionInterpreterExample
         /// <returns>
         /// Current element to be processed.
         /// </returns>
-        private string GetCurrentElement()
-        {
-            return _expressionElementList[_expressionElementIndex];
-        }
+        private string GetCurrentElement() => _expressionElementList[_expressionElementIndex];
 
         /// <summary>
         /// Increments the array-index that is used while processing the expression elements.
@@ -305,10 +296,7 @@ namespace ExpressionInterpreterExample
         /// <summary>
         /// Track bracket entering by incrementing the bracketDepth value.
         /// </summary>
-        private void EnterBracket()
-        {
-            _bracketDepth++;
-        }
+        private void EnterBracket() => _bracketDepth++;
 
         /// <summary>
         /// Track bracket leaving by decrementing the bracketDepth value.
