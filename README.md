@@ -1,5 +1,5 @@
 # Expression Interpreter
-Example implmentation of an interpreter for mathematical expressions (developed in VS2017).
+Example implmentation of an interpreter for mathematical expressions.
 
 The mathematical expression may consist of these parts:
 - the mathematical operators for addition (+), subtraction (-) and multiplication (*)
