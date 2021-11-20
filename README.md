@@ -1,3 +1,5 @@
+[![.NET](https://github.com/ulfk/expression-interpreter/actions/workflows/dotnet.yml/badge.svg)](https://github.com/ulfk/expression-interpreter/actions/workflows/dotnet.yml)
+
 # Expression Interpreter
 Example implmentation of an interpreter for mathematical expressions.
 
