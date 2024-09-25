@@ -1,12 +1,12 @@
 ﻿using System;
-using ExpressionInterpreterExample;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using ExpressionInterpreterLib;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace UnitTestsExpressionInterpreter
+namespace ExpressionInterpreterTests
 {
     [TestClass]
-    public class UnitTestExpressionInterpreter
+    public class ExpressionInterpreterTests
     {
         /// <summary>
         /// Test single numbers.

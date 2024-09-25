@@ -1,5 +1,5 @@
 ﻿
-namespace ExpressionInterpreterExample
+namespace ExpressionInterpreterLib
 {
     public static class ExceptionHelper
     {
@@ -12,7 +12,7 @@ namespace ExpressionInterpreterExample
         /// <param name="message">
         /// Message to be added to the exception message.
         /// </param>
-        public static void EnsureValidData(this bool condition, string message)
+        public static void AssertValidData(this bool condition, string message)
         {
             if(!condition)
                 throw new DataException(message);
@@ -27,7 +27,7 @@ namespace ExpressionInterpreterExample
         /// <param name="message">
         /// Message to be added to the exception message.
         /// </param>
-        public static void EnsureValidSyntax(this bool condition, string message)
+        public static void AssertValidSyntax(bool condition, string message)
         {
             if (!condition)
                 throw new SyntaxException(message);

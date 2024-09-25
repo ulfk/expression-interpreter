@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31911.196
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionInterpreter", "ExpressionInterpreter\ExpressionInterpreter.csproj", "{B638D52C-9FA2-466B-B6B9-9DA46DDD6140}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionInterpreterLib", "ExpressionInterpreterLib\ExpressionInterpreterLib.csproj", "{B638D52C-9FA2-466B-B6B9-9DA46DDD6140}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionInterpreterTests", "ExpressionInterpreterTests\ExpressionInterpreterTests.csproj", "{E92E4E06-081A-4ACE-91B5-EDC066686CFC}"
 EndProject

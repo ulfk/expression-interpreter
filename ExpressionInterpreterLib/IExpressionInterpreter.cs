@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ExpressionInterpreterExample
+namespace ExpressionInterpreterLib
 {
     public interface IExpressionInterpreter
     {
